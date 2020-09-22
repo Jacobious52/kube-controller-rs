@@ -1,0 +1,6 @@
+apiVersion: gonzalez.com/v1
+kind: Hello
+metadata:
+  name: jacob
+spec:
+  name: jacob
