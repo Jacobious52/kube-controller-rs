@@ -1,42 +1,26 @@
-use futures::StreamExt;
-use kube::api::Meta;
-use kube::api::PatchParams;
-use kube::api::PostParams;
+#[macro_use]
+extern crate log;
+
 use kube::{
-    api::{Api, ListParams},
+    api::{Meta, PatchParams, Api, PostParams, ListParams},
     error::Error,
     Client,
 };
-use kube_derive::CustomResource;
+use k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions::v1beta1::CustomResourceDefinition;
 use kube_runtime::controller::{Context, Controller, ReconcilerAction};
-use serde::{Deserialize, Serialize};
+
 use serde_json::json;
 use thiserror::Error;
+use futures::StreamExt;
 use tokio::time::Duration;
 
-use k8s_openapi::apiextensions_apiserver::pkg::apis::apiextensions::v1beta1::CustomResourceDefinition;
-
-#[macro_use]
-extern crate log;
+use kube_controller_rs::{Hello, HelloStatus};
 
 #[derive(Error, Debug)]
 #[error("{0}")]
 enum ReconcileError {
     SerializationFailed(#[from] serde_json::Error),
     PatchStatusFailed(#[from] kube::Error),
-}
-
-#[derive(CustomResource, Debug, Clone, Deserialize, Serialize)]
-#[kube(apiextensions = "v1beta1")]
-#[kube(group = "gonzalez.com", version = "v1", namespaced)]
-#[kube(status = "HelloStatus")]
-struct HelloSpec {
-    name: String,
-}
-
-#[derive(Deserialize, Serialize, Clone, Debug, Default)]
-pub struct HelloStatus {
-    message: String,
 }
 
 async fn reconcile(hello: Hello, ctx: Context<Client>) -> Result<ReconcilerAction, ReconcileError> {
