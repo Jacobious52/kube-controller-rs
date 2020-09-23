@@ -1,6 +1,7 @@
 apiVersion: gonzalez.com/v1
-kind: Hello
+kind: EfsRequest
 metadata:
   name: jacob
 spec:
-  name: jacob
+  name: test-efs
+  owner: jacob
